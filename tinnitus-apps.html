@@ -6,239 +6,640 @@
 <link rel="icon" href="icon.png">
 <link rel="stylesheet" href="style.css">
 <style>
-  .tags { color: var(--text); font-size: .9rem; }
-  blockquote { margin: .45rem 0 0; padding: 0 0 0 .9rem; border-left: 2px solid var(--line); color: var(--muted); font-size: .93rem; }
+  .filters { position: sticky; top: 0; z-index: 2; background: var(--bg);
+             padding: 1rem 0 .9rem; border-bottom: 1px solid var(--line); margin-bottom: 1.5rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .chip { font: inherit; font-size: .88rem; line-height: 1.2; cursor: pointer;
+          color: var(--text); background: var(--panel); border: 1px solid var(--line);
+          border-radius: 999px; padding: .45rem .8rem; }
+  .chip:hover { border-color: var(--blue); }
+  .chip[aria-pressed="true"] { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .chip .n { color: var(--muted); margin-left: .2rem; font-variant-numeric: tabular-nums; }
+  .chip[aria-pressed="true"] .n { color: rgba(255,255,255,.8); }
+  .chip.sm { font-size: .78rem; padding: .25rem .6rem; }
+  .status { display: flex; gap: 1rem; align-items: center; margin-top: .75rem;
+            font-size: .9rem; color: var(--muted); }
+  .status button { font: inherit; font-size: .9rem; background: none; border: 0; padding: 0;
+                   color: var(--blue); cursor: pointer; }
+  .status button[hidden] { display: none; }
+  .app { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+         padding: 1.15rem 1.35rem; margin: 0 0 1rem; }
+  .app[hidden] { display: none; }
+  .app h3 { margin: 0; font-size: 1.08rem; }
+  .app h3 a { color: var(--text); text-decoration: none; }
+  .app h3 a:hover { color: var(--blue); text-decoration: underline; }
+  .app .meta { margin: .15rem 0 0; color: var(--muted); font-size: .88rem; }
+  .app .sub { margin: .15rem 0 0; color: var(--muted); font-size: .88rem; }
+  .app .tags { display: flex; flex-wrap: wrap; gap: .35rem; margin: .6rem 0 .85rem; }
+  .qtitle { margin: 0 0 .4rem; font-size: .92rem; font-weight: 600; }
+  blockquote { margin: 0; padding: .1rem 0 .1rem .9rem; border-left: 2px solid var(--blue);
+               color: var(--muted); font-size: .93rem; }
+  .note { margin: .8rem 0 0; font-size: .86rem; color: var(--muted);
+          border-top: 1px solid var(--line); padding-top: .6rem; }
   table.counts { border-collapse: collapse; margin: 0 0 1rem; }
   table.counts td { padding: .25rem 1.25rem .25rem 0; border-bottom: 1px solid var(--line); }
   table.counts td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+  .hint { color: var(--muted); font-size: .9rem; margin: 0 0 .7rem; }
+  details.legend { margin: 0 0 1rem; }
+  details.legend summary { cursor: pointer; color: var(--blue); font-size: .92rem; }
+  details.legend dl { margin: .75rem 0 0; font-size: .9rem; }
+  .empty { color: var(--muted); }
 </style>
 </head><body>
 <main class="wrap" style="padding-top:4rem">
   <h2 style="font-size:1.9rem">Tinnitus apps presenting as therapy or treatment</h2>
-  <p class="lede">US App Store listings as of October 7, 2026</p>
+  <p class="lede">US App Store listings, checked October 10, 2026</p>
 
   <section>
-    <p>Each app below is live on the US App Store, presents itself as therapy or treatment
-    for tinnitus in its name or description, and shows no regulatory clearance. Tinnitus
-    Multi-Therapy was rejected under App Review Guideline 1.4.1 for this.</p>
-    <p>Each listing was read in full and, where the developer has a website, it was checked for FDA or CE clearance, device registration, certification, or a named medical institution.</p>
+    <p>Apple rejected Tinnitus Multi-Therapy under App Review Guideline 1.4.1, citing the need for
+    regulatory clearance and stating that “your app name implies therapy.” The 64 apps below were
+    available on the US App Store when checked. Each presents itself as therapy or treatment for
+    tinnitus in its name, subtitle or description.</p>
+    <p>No regulatory clearance for any of these apps was found in their App Store listings, on the
+    developer websites that could be reached, or in FDA 510(k) searches for tinnitus devices. That
+    can’t rule out documentation a developer may have given Apple privately.</p>
+    <p>Every listing was read in full. Each quote is copied exactly from the listing, and “…” marks
+    omitted text.</p>
     <table class="counts">
       <tr><td>Apps listed</td><td>64</td></tr>
       <tr><td>Therapy, treatment or cure in the app name</td><td>17</td></tr>
-      <tr><td>No medical disclaimer in the listing</td><td>27</td></tr>
+      <tr><td>Therapy, treatment or cure in the name or subtitle</td><td>36</td></tr>
+      <tr><td>No medical disclaimer in the App Store listing</td><td>24</td></tr>
       <tr><td>Listed in the Medical category</td><td>15</td></tr>
     </table>
   </section>
 
-  <section>
-    <h2>What the labels mean</h2>
-    <dl>
-      <dt>name</dt><dd>Therapy, treatment or cure in the app name.</dd>
-      <dt>description</dt><dd>The description calls the app therapy.</dd>
-      <dt>treatment</dt><dd>The listing claims to treat or reduce tinnitus.</dd>
-      <dt>clinical</dt><dd>The listing claims clinical validation.</dd>
-      <dt>no disclaimer</dt><dd>No medical disclaimer in the listing.</dd>
-      <dt>Medical</dt><dd>Listed in the Medical category.</dd>
-    </dl>
-  </section>
+  <div class="filters">
+    <p class="hint">Click a tag to show only the apps it applies to. Click several to see apps matching any of them.</p>
+    <div class="chips" role="group" aria-label="Filter by category">
+      <button type="button" class="chip" data-tag="name" aria-pressed="false" title="The app’s name on the App Store contains therapy, treatment or cure.">Therapy, treatment or cure in the name <span class="n">17</span></button>
+      <button type="button" class="chip" data-tag="subtitle" aria-pressed="false" title="The subtitle shown under the app’s name on the App Store contains therapy or treatment.">Therapy or treatment in the subtitle <span class="n">22</span></button>
+      <button type="button" class="chip" data-tag="description" aria-pressed="false" title="The description calls the app, or a feature of it, therapy or treatment.">Calls itself therapy or treatment <span class="n">58</span></button>
+      <button type="button" class="chip" data-tag="treatment" aria-pressed="false" title="The listing says the app makes tinnitus quieter, less noticeable or less bothersome, or reduces its symptoms or effects. A general promise of “relief” does not count on its own.">Claims to reduce tinnitus or its impact <span class="n">48</span></button>
+      <button type="button" class="chip" data-tag="research" aria-pressed="false" title="The description points to research, studies, clinical guidelines or scientific evidence for its approach. This is a claim about the method, not evidence that the app itself was tested.">Cites research or clinical evidence <span class="n">27</span></button>
+      <button type="button" class="chip" data-tag="nodisc" aria-pressed="false" title="The App Store listing never says the app is not a medical device or not a substitute for medical care, and never advises seeing a doctor or audiologist. Disclaimers on a developer’s website or inside the app are not counted.">No medical disclaimer in listing <span class="n">24</span></button>
+      <button type="button" class="chip" data-tag="medical" aria-pressed="false" title="The app is listed in the App Store’s Medical category.">Medical category <span class="n">15</span></button>
+    </div>
+    <div class="status"><span id="shown" aria-live="polite">Showing all 64 apps</span><button type="button" id="clear" hidden>Clear filters</button></div>
+  </div>
 
-  <section>
-    <h2>The apps</h2>
+  <details class="legend">
+    <summary>What each tag means</summary>
     <dl>
-      <dt><a href="https://apps.apple.com/us/app/acrn-tinnitus-relief/id6761818693">ACRN-Tinnitus Relief</a></dt>
-      <dd>运珍 张 · Lifestyle<br><span class="tags">description, treatment</span>
-        <blockquote>ACRN-Tinitus Relef is a science-backed app that uses Acoustic Coordinated Reset Neuromodulation (ACRN) to help relieve chronic tinnitus.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/art-of-noise/id6759526880">Art of Noise</a></dt>
-      <dd>Gemma Partners LLC · Music<br><span class="tags">description, no disclaimer</span>
-        <blockquote>Tinnitus is personal. Your sound therapy should be too.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/audicheck-tinnitus-relief/id6761381101">AudiCheck: Tinnitus Relief</a></dt>
-      <dd>David Bohbot · Health &amp; Fitness<br><span class="tags">description, treatment</span>
-        <blockquote>AudiCheck helps it fade into the background, with sound therapy tuned to your tinnitus.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/aurina-tinnitus-relief/id6757320176">Aurina - Tinnitus Relief</a></dt>
-      <dd>Reimagined Multimedia KLG · Health &amp; Fitness<br><span class="tags">description, treatment, no disclaimer</span>
-        <blockquote>Aurina helps you manage tinnitus with personalized sound therapy that works alongside your life, not instead of it.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/earpeace-tinnitus-relief/id6758676707">Earpeace: Tinnitus Relief</a></dt>
-      <dd>Genesis Media Group LLC (Apps) · Health &amp; Fitness<br><span class="tags">description, no disclaimer</span>
-        <blockquote>Layer high-fidelity nature sounds with therapeutic White, Pink, and Brown noise.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/freequency-tinnitus-platform/id6711361328">Freequency — Tinnitus Platform</a></dt>
-      <dd>Freequency B.V. · Medical<br><span class="tags">description, Medical</span>
-        <blockquote>As the very first app to apply mirror therapy and exposure techniques within an Augmented Reality environment, Freequency offers a unique way to localize the sound of your tinnitus and gradually move it into the background.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/harmonic-tinnitus-relief/id6758923584">Harmonic: Tinnitus Relief</a></dt>
-      <dd>Donely, Incorporated · Health &amp; Fitness<br><span class="tags">description</span>
-        <blockquote>Harmonic helps make tinnitus feel less noticeable with personalized sound therapy designed around the sound you hear.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/hearing-test-by-tinni/id6760406914">Hearing Test by Tinni</a></dt>
-      <dd>MATEI ANDREI-VLAD PERSOANA FIZICA AUTORIZATA · Health &amp; Fitness<br><span class="tags">description</span>
-        <blockquote>Save your profile for personalized sound masking and therapy sessions.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/hearos-tinnitus-relief/id6769433708">hearOS: Tinnitus Relief</a></dt>
-      <dd>B1 YONETIM SISTEMLERI YAZILIM VE DANISMANLIK Limited Sirketi · Health &amp; Fitness<br><span class="tags">description</span>
-        <blockquote>hearOS helps you manage tinnitus with personalized sound therapy, frequency matching, hearing insights, and calming daily routines.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/hushh-tinnitus-therapy/id6788676557">Hushh: Tinnitus Therapy</a></dt>
-      <dd>Bhuvan Kumar Gupta · Health &amp; Fitness<br><span class="tags">name, description</span>
-        <blockquote>SOUND THERAPY, TAILORED TO YOU</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/hzera-tinnitus-relief/id6759874575">Hzera - Tinnitus Relief</a></dt>
-      <dd>TXN LLC · Health &amp; Fitness<br><span class="tags">description</span>
-        <blockquote>TWO THERAPY MODES. Notch Sound Therapy removes a band at your calibrated pitch from what you hear.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/millpond-tinnitus-relief/id6804808794">Millpond: Tinnitus Relief</a></dt>
-      <dd>InnovateIQ Labs LLC · Health &amp; Fitness<br><span class="tags">description</span>
-        <blockquote>Personalized tinnitus therapy.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/my-practical-tinnitus/id1512600147">My Practical Tinnitus</a></dt>
-      <dd>Robert Redfern · Medical<br><span class="tags">treatment, clinical, no disclaimer, Medical</span>
-        <blockquote>A goal oriented practical tinnitus management app ... based on published clinical guidelines, with free activities and guidance to help reduce tinnitus bother.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/nobells/id6757550248">Nobells</a></dt>
-      <dd>Rob Hammond · Medical<br><span class="tags">description, treatment, no disclaimer, Medical</span>
-        <blockquote>Nobells combines sound therapy with education and cognitive techniques - the approach research shows is most effective for tinnitus management.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/notchforge-ear-ringing-relief/id6776704119">NotchForge: Ear Ringing Relief</a></dt>
-      <dd>TRIMECH Dhaker · Health &amp; Fitness<br><span class="tags">treatment</span>
-        <blockquote>NotchForge stimulates healthy surrounding neurons via lateral inhibition to calm the hyperactive area responsible for the ringing.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/soothely-tinnitus-relief/id6780451445">Soothely: Tinnitus Relief</a></dt>
-      <dd>Mario Pek · Medical<br><span class="tags">description, Medical</span>
-        <blockquote>SOUND THERAPY, TUNED TO YOU. Coordinated Reset: four tones around your pitch in a shuffled pattern.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/sound-oasis-bst-100-adco/id6446284952">Sound Oasis BST-100-ADCO</a></dt>
-      <dd>Headwaters Inc. · Health &amp; Fitness<br><span class="tags">description</span>
-        <blockquote>Sound Oasis is the world leader in sound therapy systems. We take tinnitus therapy seriously and it is our hope that this application will provide relief for your tinnitus symptoms.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/sound-oasis-bst-400/id6473402976">Sound Oasis BST-400</a></dt>
-      <dd>Headwaters Inc. · Health &amp; Fitness<br><span class="tags">description</span>
-        <blockquote>Sound Oasis is the world leader in sound therapy systems. We take tinnitus therapy seriously and it is our hope that this application will provide relief for your tinnitus symptoms.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/sound-oasis-bst-80-25t/id6738957168">Sound Oasis BST-80-25T</a></dt>
-      <dd>Headwaters Inc. · Health &amp; Fitness<br><span class="tags">description</span>
-        <blockquote>Sound Oasis is the world leader in sound therapy systems. We take tinnitus therapy seriously and it is our hope that this application will provide relief for your tinnitus symptoms.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/sound-oasis-s-6000/id1636900511">Sound Oasis S-6000</a></dt>
-      <dd>Headwaters Inc. · Health &amp; Fitness<br><span class="tags">description</span>
-        <blockquote>Sound Oasis is the world leader in sound therapy systems. We take tinnitus therapy seriously and it is our hope that this application will provide relief for your tinnitus symptoms.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/still-tinnitus/id6465992007">Still Tinnitus</a></dt>
-      <dd>Still Tinnitus · Health &amp; Fitness<br><span class="tags">description, treatment, clinical, no disclaimer</span>
-        <blockquote>The app is based on 4 tinnitus treatment methods: Tinnitus Retraining Therapy, Cognitive Behavioral Therapy, Acceptance &amp; Commitment Therapy and Mindfulness. These are all scientifically proven methods that can help reduce the impact that tinnitus has on your life.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnicalm-tinnitus-relief/id6761223168">TinniCalm - Tinnitus Relief</a></dt>
-      <dd>Yaroslav Shevchenko · Health &amp; Fitness<br><span class="tags">description, treatment</span>
-        <blockquote>Notch Therapy removes your specific tinnitus frequency from the audio you hear. Over time, this approach may help reduce the perception of your tinnitus.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnicare-tinnitus-relief/id6762048401">TinniCare: Tinnitus Relief</a></dt>
-      <dd>MEHMET ENES ARICI · Health &amp; Fitness<br><span class="tags">description, treatment, clinical</span>
-        <blockquote>TinniCare is a science-based tinnitus sound therapy app developed by an ENT doctor. ... With consistent use, tinnitus perception decreases.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnimizer-tinnitus-therapy/id6648789084">Tinnimizer - Tinnitus Therapy</a></dt>
-      <dd>Tinnimizer Pty Ltd · Medical<br><span class="tags">name, description, treatment, Medical</span>
-        <blockquote>Tinnimizer first detects the user&#x27;s tinnitus frequency and then generates therapy tracks tailored to it. ... This process is intended to help the brain overcome tinnitus.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitune-tinnitus-sleep-care/id6766398948">TinniTune: Tinnitus Sleep Care</a></dt>
-      <dd>changyong seong · Health &amp; Fitness<br><span class="tags">description, treatment</span>
-        <blockquote>TinniTune is a professional sound therapy solution designed for tinnitus relief.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus/id428954411">Tinnitus</a></dt>
-      <dd>John goodstadt · Medical<br><span class="tags">treatment, no disclaimer, Medical</span>
-        <blockquote>This App replaces the unsightly earpiece that is the standard treatment for tinnitus.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-aid-relief/id891630056">Tinnitus Aid: Relief</a></dt>
-      <dd>Phase4 Mobile, Inc. · Medical<br><span class="tags">treatment, no disclaimer, Medical</span>
-        <blockquote>Recent research shows that tinnitus can be treated by listening to sounds that have been filtered to remove your specific tinnitus frequencies.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-angel-sound-therapies/id1323769129">Tinnitus Angel Sound Therapies</a></dt>
-      <dd>JX Labs Limited · Medical<br><span class="tags">name, description, treatment, no disclaimer, Medical</span>
-        <blockquote>Tinnitus Angel Sound Therapies: this app is designed to improve the condition of tonal tinnitus, and provides two kinds of tinnitus therapy: Neuromodulation Therapy and Notched Sound Therapy.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-companion/id6758949594">Tinnitus Companion</a></dt>
-      <dd>Raymond Clark · Health &amp; Fitness<br><span class="tags">description, no disclaimer</span>
-        <blockquote>Tinnitus Companion is a complete daily support system designed to help you manage tinnitus through sound therapy, nervous system calming, physical exercises, and structured tracking.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-cure/id6777599685">Tinnitus Cure</a></dt>
-      <dd>Shenzhen Fu Kang Heng Development Co., Ltd. · Health &amp; Fitness<br><span class="tags">name, description, treatment, clinical, no disclaimer</span>
-        <blockquote>Our application uses Customized Notched Sound Therapy, a clinically studied technique designed to retrain your auditory cortex and reduce the perceived loudness of internal ringing.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-ease/id6695743269">Tinnitus Ease</a></dt>
-      <dd>ROLAND PETER SJOBERG · Health &amp; Fitness<br><span class="tags">description, no disclaimer</span>
-        <blockquote>ASMR Sounds: Explore calming ASMR soundscapes, designed to promote relaxation and reduce stress, adding an extra dimension to your sound therapy.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-frequency-app/id6742895822">Tinnitus Frequency App</a></dt>
-      <dd>Brandon Stecklein · Health &amp; Fitness<br><span class="tags">description, treatment</span>
-        <blockquote>The Tinnitus Frequency App is your go-to app for managing and alleviating tinnitus symptoms through custom sound therapy.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-help/id382593362">tinnitus help</a></dt>
-      <dd>IND-Ingenieurbuero f. Nachrichten- u. Datentechnik · Health &amp; Fitness<br><span class="tags">treatment, no disclaimer</span>
-        <blockquote>Used very successfully in the treatment of tinnitus.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-hq/id891628361">Tinnitus HQ</a></dt>
-      <dd>Phase4 Mobile, Inc. · Medical<br><span class="tags">treatment, Medical</span>
-        <blockquote>Recent research shows that tinnitus can be treated by listening to sounds that have been filtered to remove your specific tinnitus frequencies.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-masker-sound-therapy/id6790138122">Tinnitus Masker: Sound Therapy</a></dt>
-      <dd>App Harbour ApS · Health &amp; Fitness<br><span class="tags">name, description</span>
-        <blockquote>NOTCHED SOUND THERAPY. Play white, pink or brown noise with a notch carved out right at your matched pitch.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-relief-husheva/id6779979158">Tinnitus Relief - Husheva</a></dt>
-      <dd>VAST FLOW, TOO · Health &amp; Fitness<br><span class="tags">description</span>
-        <blockquote>Husheva is a tinnitus relief and sound-therapy companion.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-relief-sound/id1557727236">Tinnitus Relief Sound</a></dt>
-      <dd>Josue Montano · Health &amp; Fitness<br><span class="tags">description</span>
-        <blockquote>Tinnitus Relief Sound helps you create a calmer daily routine with relaxing sound therapy, sound masking tools, personal journaling, and simple tracking features.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-relief-sound-masking/id6742380332">Tinnitus Relief Sound Masking+</a></dt>
-      <dd>Bart Jacobs · Health &amp; Fitness<br><span class="tags">description, no disclaimer</span>
-        <blockquote>Serenity provides effective tinnitus relief sound masking therapy to help manage tinnitus symptoms and bring peace to your daily life.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-relief-sounds/id6736926292">Tinnitus Relief Sounds</a></dt>
-      <dd>Deisy Renteria · Health &amp; Fitness<br><span class="tags">description</span>
-        <blockquote>Tinnitus Relief provides a collection of soothing soundscapes to help mask the perception of tinnitus. ... this app supports sound therapy for managing tinnitus symptoms.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-relief-aid-help/id6742564706">Tinnitus Relief, Aid &amp; Help</a></dt>
-      <dd>Pierre Stanislas · Medical<br><span class="tags">treatment, no disclaimer, Medical</span>
-        <blockquote>Recent research shows that tinnitus can be treated by listening to sounds that have been filtered to remove your specific tinnitus frequencies.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-relief-auresa/id6787265932">Tinnitus Relief: Auresa</a></dt>
-      <dd>ALLEGRO DIGITAL LTD · Health &amp; Fitness<br><span class="tags">description</span>
-        <blockquote>Auresa is a beautifully simple tinnitus relief and sound therapy app that helps you mask, calm and gradually habituate to tinnitus.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-relief-earcalm/id6795010925">Tinnitus Relief: EarCalm</a></dt>
-      <dd>Speed AI Labs LLP · Health &amp; Fitness<br><span class="tags">description</span>
-        <blockquote>A layered sound-therapy mixer that keeps playing steadily through the night.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-relief-mypattern/id6757972866">Tinnitus Relief: MyPattern</a></dt>
-      <dd>ST14 X AS · Health &amp; Fitness<br><span class="tags">description</span>
-        <blockquote>It&#x27;s a complete program of sound therapies and mental tools shaped around you and your tinnitus.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-relief-ringing-ears/id6770140437">Tinnitus Relief: Ringing Ears</a></dt>
-      <dd>Matthew Pratt · Health &amp; Fitness<br><span class="tags">description, no disclaimer</span>
-        <blockquote>Adjust the notch, choose a therapy, add gentle tools, or stop everything instantly.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-relief-sleep-calm/id6763144466">Tinnitus Relief: Sleep &amp; Calm</a></dt>
-      <dd>Nicola Erbacci · Health &amp; Fitness<br><span class="tags">description</span>
-        <blockquote>Tinnitus Relief is a sound therapy app built around one job: help you stop noticing the ringing in your ears.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-relief-sound-therapy/id6769763817">Tinnitus Relief: Sound Therapy</a></dt>
-      <dd>Efat Md. Minhaz Siddiquee · Health &amp; Fitness<br><span class="tags">name</span>
-        <blockquote>TinniRelief uses personalized relaxing sounds to help you manage the ringing, buzzing, or hissing in your ears that never seems to stop.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-relief-stillwell/id6756894241">Tinnitus Relief: StillWell</a></dt>
-      <dd>Bit Byte Bit Software Ltd · Health &amp; Fitness<br><span class="tags">description, no disclaimer</span>
-        <blockquote>StillWell combines personalized sound therapy along with a 12-week program to help you unwind and finally find moments of peace.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-relief-tinnisound/id6748435838">Tinnitus Relief: TinniSound</a></dt>
-      <dd>EaseHere Limited · Medical<br><span class="tags">description, treatment, Medical</span>
-        <blockquote>Whether you&#x27;re seeking relaxation, improved sleep, or relief from tinnitus, this app offers powerful tools to create a personalized sound treatment tailored to your needs.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-relief-tonal-therapy/id1525765625">Tinnitus Relief: Tonal Therapy</a></dt>
-      <dd>Fickle Bits, LLC · Health &amp; Fitness<br><span class="tags">name, description, treatment, no disclaimer</span>
-        <blockquote>Tonal Therapy helps reduce the symptoms of tinnitus through Acoustic Coordinated Reset Neuromodulation Therapy.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-retraining/id6765492234">Tinnitus Retraining</a></dt>
-      <dd>Ian SMITH · Health &amp; Fitness<br><span class="tags">description, treatment</span>
-        <blockquote>Tinnitus Retraining is a comprehensive sound therapy app designed to help you manage tinnitus symptoms and improve your quality of life.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-saurus/id6762468342">Tinnitus Saurus</a></dt>
-      <dd>Techiasaurus, LLC · Health &amp; Fitness<br><span class="tags">description, treatment</span>
-        <blockquote>Notched sound therapy removes a narrow band of frequencies centered on your tinnitus pitch from broadband noise or music. Research suggests this approach may help reduce perceived tinnitus loudness over time.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-sound-therapy/id6469771069">Tinnitus sound therapy</a></dt>
-      <dd>Pavel Vinnik · Health &amp; Fitness<br><span class="tags">name, description, no disclaimer</span>
-        <blockquote>Tinnitus+ app is a tinnitus therapy app to mask the ringing in your ears with calming sounds.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-sound-therapy-rngaway/id6670191583">Tinnitus Sound Therapy RngAway</a></dt>
-      <dd>Hussain Mustafa · Medical<br><span class="tags">name, description, treatment, no disclaimer, Medical</span>
-        <blockquote>Look no further than RingAway, the ultimate sound therapy app designed to help you manage your symptoms, calm your mind, and regain control of your life.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-sound-threapy/id6463489658">Tinnitus Sound Threapy</a></dt>
-      <dd>Jiten Parmar · Lifestyle<br><span class="tags">name, description, treatment, no disclaimer</span>
-        <blockquote>One of the most powerful tinnitus therapy methods is to use the sounds of nature. ... Those people are now recognizing the benefits of nature sounds as part of their daily tinnitus treatment.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-tamer-sound-therapy/id6782224159">Tinnitus Tamer: Sound Therapy</a></dt>
-      <dd>Justin Pruskowski · Health &amp; Fitness<br><span class="tags">name, description</span>
-        <blockquote>SOUND THERAPY THAT ACTUALLY WORKS</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-therapy-acrn/id6499084492">Tinnitus Therapy - ACRN</a></dt>
-      <dd>safak helvaci · Health &amp; Fitness<br><span class="tags">name, description</span>
-        <blockquote>The app provides acoustic sound therapy to help mask tinnitus tones, promote relaxation, and improve overall comfort.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-therapy-lite/id794541814">Tinnitus Therapy Lite</a></dt>
-      <dd>Headwaters Inc. · Health &amp; Fitness<br><span class="tags">name, description, no disclaimer</span>
-        <blockquote>Sound Oasis is the world leader in sound therapy systems. We take tinnitus therapy seriously and it is our hope that this application will provide relief for your tinnitus symptoms.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-therapy-pro/id771010115">Tinnitus Therapy Pro</a></dt>
-      <dd>Headwaters Inc. · Health &amp; Fitness<br><span class="tags">name, description, no disclaimer</span>
-        <blockquote>6 doctor developed tinnitus therapy sounds: Tinnitus Therapy .9K - 3.2K, Tinnitus Therapy 1 1K - 10K, Tinnitus Therapy 2 1K - 10K ...</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-tracker-tone-match/id6771102700">Tinnitus Tracker: Tone Match</a></dt>
-      <dd>Mohamed Ali · Health &amp; Fitness<br><span class="tags">description</span>
-        <blockquote>Notched-noise therapy tuned to your matched tone.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitusstory/id6758023099">TinnitusStory</a></dt>
-      <dd>Jacob Duvall · Health &amp; Fitness<br><span class="tags">description, no disclaimer</span>
-        <blockquote>TinnitusStory helps you manage tinnitus through evidence-based sound therapy, guided meditations, and a structured habituation program.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinova-sleep-sound-therapy/id6762290728">Tinova: Sleep &amp; Sound Therapy</a></dt>
-      <dd>Side By Tech LLC · Health &amp; Fitness<br><span class="tags">name, description, treatment, no disclaimer</span>
-        <blockquote>Tinova is a precision sound therapy app built to help you fall asleep faster, focus deeper, and ease tinnitus through carefully designed audio.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tonal-tinnitus-therapy/id6471373051">Tonal Tinnitus Therapy</a></dt>
-      <dd>appyhapps.nl B.V. · Medical<br><span class="tags">name, description, treatment, Medical</span>
-        <blockquote>The Tonal Tinnitus Therapy app employs acoustic neuromodulation. Research indicates that, in certain instances, acoustic neuromodulation can alleviate tinnitus symptoms.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tsound-tinnitus-sound-therapy/id6569241721">TSound: tinnitus sound therapy</a></dt>
-      <dd>Andrii Fomichov · Medical<br><span class="tags">name, description, treatment, no disclaimer, Medical</span>
-        <blockquote>TSound is a tinnitus sound therapy app ... the application is useful not only for the treatment of tinnitus, but also for sleep, meditation, work, travel and other needs to calm down.</blockquote></dd>
-      <dt><a href="https://apps.apple.com/us/app/tinnitus-relief-sound-masking/id1533437539">™Tinnitus Relief Sound Masking</a></dt>
-      <dd>Burotec Limited · Medical<br><span class="tags">description, treatment, no disclaimer, Medical</span>
-        <blockquote>Tinnitus Relief Sound Masking is a simple, customizable app designed to help you mask and manage tinnitus using calming sounds and gentle noise therapy. ... this app gives you powerful tools to create your own personalized sound treatment.</blockquote></dd>
+      <dt>Therapy, treatment or cure in the name</dt><dd>The app’s name on the App Store contains therapy, treatment or cure.</dd>
+      <dt>Therapy or treatment in the subtitle</dt><dd>The subtitle shown under the app’s name on the App Store contains therapy or treatment.</dd>
+      <dt>Calls itself therapy or treatment</dt><dd>The description calls the app, or a feature of it, therapy or treatment.</dd>
+      <dt>Claims to reduce tinnitus or its impact</dt><dd>The listing says the app makes tinnitus quieter, less noticeable or less bothersome, or reduces its symptoms or effects. A general promise of “relief” does not count on its own.</dd>
+      <dt>Cites research or clinical evidence</dt><dd>The description points to research, studies, clinical guidelines or scientific evidence for its approach. This is a claim about the method, not evidence that the app itself was tested.</dd>
+      <dt>No medical disclaimer in listing</dt><dd>The App Store listing never says the app is not a medical device or not a substitute for medical care, and never advises seeing a doctor or audiologist. Disclaimers on a developer’s website or inside the app are not counted.</dd>
+      <dt>Medical category</dt><dd>The app is listed in the App Store’s Medical category.</dd>
     </dl>
+  </details>
+
+  <section id="apps">
+      <article class="app" data-tags="description treatment research">
+        <h3><a href="https://apps.apple.com/us/app/id6761818693">ACRN-Tinnitus Relief</a></h3>
+        <p class="meta">运珍 张 · Lifestyle</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button></p>
+        <p class="qtitle">The description calls the app’s method a physical therapy that “resets” the auditory cortex.</p>
+        <blockquote>ACRN is a cutting-edge physical therapy that &quot;resets&quot; the auditory cortex by reshaping abnormal neural connections.</blockquote>
+      </article>
+      <article class="app" data-tags="description nodisc">
+        <h3><a href="https://apps.apple.com/us/app/id6759526880">Art of Noise</a></h3>
+        <p class="meta">Gemma Partners LLC · Music</p>
+        <p class="sub">Subtitle: “Pink Noise for Tinnitus Relief”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button></p>
+        <p class="qtitle">The description presents the app as your sound therapy.</p>
+        <blockquote>Tinnitus is personal. Your sound therapy should be too.</blockquote>
+      </article>
+      <article class="app" data-tags="subtitle description treatment">
+        <h3><a href="https://apps.apple.com/us/app/id6761381101">AudiCheck: Tinnitus Relief</a></h3>
+        <p class="meta">David Bohbot · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Sound therapy &amp; sleep”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button></p>
+        <p class="qtitle">The description calls the app sound therapy that helps tinnitus fade into the background.</p>
+        <blockquote>AudiCheck helps it fade into the background, with sound therapy tuned to your tinnitus.</blockquote>
+      </article>
+      <article class="app" data-tags="subtitle description treatment research nodisc">
+        <h3><a href="https://apps.apple.com/us/app/id6757320176">Aurina - Tinnitus Relief</a></h3>
+        <p class="meta">Reimagined Multimedia KLG · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Sound Therapy &amp; Notch Relief”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button></p>
+        <p class="qtitle">The description uses the word “therapy” to describe the app.</p>
+        <blockquote>Aurina helps you manage tinnitus with personalized sound therapy that works alongside your life, not instead of it.</blockquote>
+      </article>
+      <article class="app" data-tags="subtitle treatment nodisc">
+        <h3><a href="https://apps.apple.com/us/app/id6758676707">Earpeace: Tinnitus Relief</a></h3>
+        <p class="meta">Genesis Media Group LLC (Apps) · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Stop Ringing &amp; Sound Therapy”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button></p>
+        <p class="qtitle">The app’s App Store subtitle calls it sound therapy.</p>
+        <blockquote>Stop Ringing &amp; Sound Therapy</blockquote>
+      </article>
+      <article class="app" data-tags="description treatment research medical">
+        <h3><a href="https://apps.apple.com/us/app/id6711361328">Freequency — Tinnitus Platform</a></h3>
+        <p class="meta">Freequency B.V. · Medical</p>
+        <p class="sub">Subtitle: “Tinnitus on Your Terms”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button> <button type="button" class="chip sm" data-tag="medical" aria-pressed="false">Medical category</button></p>
+        <p class="qtitle">The description says the app applies mirror therapy to tinnitus.</p>
+        <blockquote>As the very first app to apply mirror therapy and exposure techniques within an Augmented Reality environment, Freequency offers a unique way to localize the sound of your tinnitus and gradually move it into the background—without medical devices or expensive treatments.</blockquote>
+      </article>
+      <article class="app" data-tags="subtitle description treatment">
+        <h3><a href="https://apps.apple.com/us/app/id6758923584">Harmonic: Tinnitus Relief</a></h3>
+        <p class="meta">Donely, Incorporated · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Notched Sound Therapy”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button></p>
+        <p class="qtitle">The description calls the app sound therapy that helps make tinnitus less noticeable.</p>
+        <blockquote>Harmonic helps make tinnitus feel less noticeable with personalized sound therapy designed around the sound you hear.</blockquote>
+      </article>
+      <article class="app" data-tags="description">
+        <h3><a href="https://apps.apple.com/us/app/id6760406914">Hearing Test by Tinni</a></h3>
+        <p class="meta">MATEI ANDREI-VLAD PERSOANA FIZICA AUTORIZATA · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Tinnitus Relief &amp; Sleep Sounds”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button></p>
+        <p class="qtitle">The description offers therapy sessions in the app.</p>
+        <blockquote>Save your profile for personalized sound masking and therapy sessions.</blockquote>
+      </article>
+      <article class="app" data-tags="subtitle description">
+        <h3><a href="https://apps.apple.com/us/app/id6769433708">hearOS: Tinnitus Relief</a></h3>
+        <p class="meta">B1 YONETIM SISTEMLERI YAZILIM VE DANISMANLIK Limited Sirketi · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Personal Sound Therapy”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button></p>
+        <p class="qtitle">The description uses the word “therapy” to describe the app.</p>
+        <blockquote>hearOS helps you manage tinnitus with personalized sound therapy, frequency matching, hearing insights, and calming daily routines.</blockquote>
+      </article>
+      <article class="app" data-tags="name subtitle description research">
+        <h3><a href="https://apps.apple.com/us/app/id6788676557">Hushh: Tinnitus Therapy</a></h3>
+        <p class="meta">Bhuvan Kumar Gupta · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Sound therapy for ringing ears”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="name" aria-pressed="false">Therapy, treatment or cure in the name</button> <button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button></p>
+        <p class="qtitle">A section heading in the description calls the app’s features sound therapy.</p>
+        <blockquote>SOUND THERAPY, TAILORED TO YOU</blockquote>
+      </article>
+      <article class="app" data-tags="subtitle description treatment research">
+        <h3><a href="https://apps.apple.com/us/app/id6759874575">Hzera - Tinnitus Relief</a></h3>
+        <p class="meta">TXN LLC · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Notch &amp; CR Sound Therapy”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button></p>
+        <p class="qtitle">The description names one of the app’s two therapy modes “Notch Sound Therapy.”</p>
+        <blockquote>Notch Sound Therapy removes a band at your calibrated pitch from what you hear.</blockquote>
+        <p class="note">The developer’s own <a href="https://hzera.com/terms.html">terms</a>, section 2: “Hzera is not a medical device, and has not been evaluated or approved by any regulatory health authority.” The same terms call it a “tinnitus therapy tool” and say it makes no claim to cure, treat or diagnose.</p>
+      </article>
+      <article class="app" data-tags="subtitle description">
+        <h3><a href="https://apps.apple.com/us/app/id6804808794">Millpond: Tinnitus Relief</a></h3>
+        <p class="meta">InnovateIQ Labs LLC · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Personalized sound therapy”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button></p>
+        <p class="qtitle">The description opens by calling the app tinnitus therapy.</p>
+        <blockquote>Personalized tinnitus therapy. A clear next step.</blockquote>
+      </article>
+      <article class="app" data-tags="treatment research nodisc medical">
+        <h3><a href="https://apps.apple.com/us/app/id1512600147">My Practical Tinnitus</a></h3>
+        <p class="meta">Robert Redfern · Medical</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button> <button type="button" class="chip sm" data-tag="medical" aria-pressed="false">Medical category</button></p>
+        <p class="qtitle">The description says the app is based on clinical guidelines and helps reduce tinnitus bother.</p>
+        <blockquote>A goal oriented practical tinnitus management app, for those where no other related aetiology (medical condition) exists, based on published clinical guidelines, with free activities and guidance to help reduce tinnitus bother.</blockquote>
+        <p class="note">Mostly educational, with example sounds and a pitch-matching tool. Last updated July 2020.</p>
+      </article>
+      <article class="app" data-tags="description treatment research nodisc medical">
+        <h3><a href="https://apps.apple.com/us/app/id6757550248">Nobells</a></h3>
+        <p class="meta">Rob Hammond · Medical</p>
+        <p class="sub">Subtitle: “Tinnitus relief, no ringing!”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button> <button type="button" class="chip sm" data-tag="medical" aria-pressed="false">Medical category</button></p>
+        <p class="qtitle">The description calls the app sound therapy and says research shows its approach is the most effective.</p>
+        <blockquote>Nobells combines sound therapy with education and cognitive techniques - the approach research shows is most effective for tinnitus management.</blockquote>
+      </article>
+      <article class="app" data-tags="description treatment research">
+        <h3><a href="https://apps.apple.com/us/app/id6776704119">NotchForge: Ear Ringing Relief</a></h3>
+        <p class="meta">TRIMECH Dhaker · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Tinnitus Notched Sound Guide”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button></p>
+        <p class="qtitle">The description says the app calms the hyperactive area responsible for the ringing.</p>
+        <blockquote>By playing white, pink, brown, or natural noise with the exact frequency of your tinnitus filtered out, NotchForge stimulates healthy surrounding neurons via lateral inhibition to calm the hyperactive area responsible for the ringing.</blockquote>
+      </article>
+      <article class="app" data-tags="description research">
+        <h3><a href="https://apps.apple.com/us/app/id6761223168">Quiet Again: Tinnitus Relief</a></h3>
+        <p class="meta">Yaroslav Shevchenko · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “White Noise &amp; Sleep Sounds”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button></p>
+        <p class="qtitle">A section heading in the description sells a “Notch Therapy” sound as a premium feature.</p>
+        <blockquote>NOTCH THERAPY SOUND (PREMIUM)</blockquote>
+        <p class="note">Renamed from TinniCalm in its October 9, 2026 update. The description also says the app is not a medical device and does not diagnose, treat or cure tinnitus.</p>
+      </article>
+      <article class="app" data-tags="subtitle description treatment medical">
+        <h3><a href="https://apps.apple.com/us/app/id6780451445">Soothely: Tinnitus Relief</a></h3>
+        <p class="meta">Mario Pek · Medical</p>
+        <p class="sub">Subtitle: “Sound Therapy for Ear Ringing”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="medical" aria-pressed="false">Medical category</button></p>
+        <p class="qtitle">A section heading in the description calls the app’s sounds sound therapy.</p>
+        <blockquote>SOUND THERAPY, TUNED TO YOU</blockquote>
+      </article>
+      <article class="app" data-tags="description treatment">
+        <h3><a href="https://apps.apple.com/us/app/id6446284952">Sound Oasis BST-100-ADCO</a></h3>
+        <p class="meta">Headwaters Inc. · Health &amp; Fitness</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button></p>
+        <p class="qtitle">The description presents the app as tinnitus therapy meant to relieve tinnitus symptoms.</p>
+        <blockquote>We take tinnitus therapy seriously and it is our hope that this application will provide relief for your tinnitus symptoms.</blockquote>
+        <p class="note">Companion app for a Sound Oasis bedside sound therapy device. Published by Headwaters Inc., which publishes six apps on this list.</p>
+      </article>
+      <article class="app" data-tags="description treatment">
+        <h3><a href="https://apps.apple.com/us/app/id6473402976">Sound Oasis BST-400</a></h3>
+        <p class="meta">Headwaters Inc. · Health &amp; Fitness</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button></p>
+        <p class="qtitle">The description presents the app as tinnitus therapy meant to relieve tinnitus symptoms.</p>
+        <blockquote>We take tinnitus therapy seriously and it is our hope that this application will provide relief for your tinnitus symptoms.</blockquote>
+        <p class="note">Companion app for a Sound Oasis bedside sound therapy device. Published by Headwaters Inc., which publishes six apps on this list.</p>
+      </article>
+      <article class="app" data-tags="description treatment">
+        <h3><a href="https://apps.apple.com/us/app/id6738957168">Sound Oasis BST-80-25T</a></h3>
+        <p class="meta">Headwaters Inc. · Health &amp; Fitness</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button></p>
+        <p class="qtitle">The description presents the app as tinnitus therapy meant to relieve tinnitus symptoms.</p>
+        <blockquote>We take tinnitus therapy seriously, and it is our hope that this application will provide relief for your tinnitus symptoms.</blockquote>
+        <p class="note">Companion app for a Sound Oasis bedside sound therapy device. Published by Headwaters Inc., which publishes six apps on this list.</p>
+      </article>
+      <article class="app" data-tags="description treatment">
+        <h3><a href="https://apps.apple.com/us/app/id1636900511">Sound Oasis S-6000</a></h3>
+        <p class="meta">Headwaters Inc. · Health &amp; Fitness</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button></p>
+        <p class="qtitle">The description presents the app as part of a sound therapy system that also works on its own.</p>
+        <blockquote>This app was designed to complement our S-6000 Deluxe Sound Therapy System, but it works great as a standalone app too.</blockquote>
+        <p class="note">Companion app for a Sound Oasis bedside sound therapy device; the description says it also works on its own. Published by Headwaters Inc., which publishes six apps on this list.</p>
+      </article>
+      <article class="app" data-tags="description treatment research nodisc">
+        <h3><a href="https://apps.apple.com/us/app/id6465992007">Still Tinnitus</a></h3>
+        <p class="meta">Still Tinnitus · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “The tinnitus relief app”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button></p>
+        <p class="qtitle">The description says the app is built on tinnitus treatment methods it calls scientifically proven.</p>
+        <blockquote>The app is based on 4 tinnitus treatment methods: Tinnitus Retraining Therapy, Cognitive Behavioral Therapy, Acceptance &amp; Commitment Therapy and Mindfulness. These are all scientifically proven methods that can help reduce the impact that tinnitus has on your life.</blockquote>
+      </article>
+      <article class="app" data-tags="subtitle description treatment research">
+        <h3><a href="https://apps.apple.com/us/app/id6762048401">TinniCare: Tinnitus Relief</a></h3>
+        <p class="meta">MEHMET ENES ARICI · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Ear Ringing Sound Therapy”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button></p>
+        <p class="qtitle">The description calls the app sound therapy and cites a meta-analysis for its method.</p>
+        <blockquote>TinniCare is a science-based tinnitus sound therapy app developed by an ENT doctor. A 2025 meta-analysis of 14 randomized controlled trials with 793 patients showed notch therapy significantly reduces tinnitus severity.</blockquote>
+      </article>
+      <article class="app" data-tags="name description treatment medical">
+        <h3><a href="https://apps.apple.com/us/app/id6648789084">Tinnimizer - Tinnitus Therapy</a></h3>
+        <p class="meta">Tinnimizer Pty Ltd · Medical</p>
+        <p class="sub">Subtitle: “Relief for Ear Ringing Noise”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="name" aria-pressed="false">Therapy, treatment or cure in the name</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="medical" aria-pressed="false">Medical category</button></p>
+        <p class="qtitle">The description says the app’s therapy tracks are intended to help the brain overcome tinnitus.</p>
+        <blockquote>Tinnimizer first detects the user&#x27;s tinnitus frequency and then generates therapy tracks tailored to it. … This process is intended to help the brain overcome tinnitus.</blockquote>
+        <p class="note">The developer’s terms say the app is not intended to replace medical advice, diagnosis or treatment.</p>
+      </article>
+      <article class="app" data-tags="subtitle description treatment research">
+        <h3><a href="https://apps.apple.com/us/app/id6766398948">TinniTune: Tinnitus Sleep Care</a></h3>
+        <p class="meta">changyong seong · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “White Noise &amp; Sound Therapy”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button></p>
+        <p class="qtitle">The description calls the app a professional sound therapy solution for tinnitus relief.</p>
+        <blockquote>TinniTune is a professional sound therapy solution designed for tinnitus relief.</blockquote>
+      </article>
+      <article class="app" data-tags="description treatment nodisc medical">
+        <h3><a href="https://apps.apple.com/us/app/id428954411">Tinnitus</a></h3>
+        <p class="meta">John goodstadt · Medical</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button> <button type="button" class="chip sm" data-tag="medical" aria-pressed="false">Medical category</button></p>
+        <p class="qtitle">The description says the app replaces the standard treatment for tinnitus.</p>
+        <blockquote>This App replaces the unsightly earpiece that is the standard treatment for tinnitus. Others might think you are listening to music but really you are applying the treatment prescribed by your audiologist.</blockquote>
+        <p class="note">Presents the app as a way to apply treatment prescribed by an audiologist. Last updated May 2021.</p>
+      </article>
+      <article class="app" data-tags="treatment research nodisc medical">
+        <h3><a href="https://apps.apple.com/us/app/id891630056">Tinnitus Aid: Relief</a></h3>
+        <p class="meta">Phase4 Mobile, Inc. · Medical</p>
+        <p class="sub">Subtitle: “HQ sounds,filters,sound masks”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button> <button type="button" class="chip sm" data-tag="medical" aria-pressed="false">Medical category</button></p>
+        <p class="qtitle">The description says research shows tinnitus can be treated the way the app works.</p>
+        <blockquote>Recent research shows that tinnitus can be treated by listening to sounds that have been filtered to remove your specific tinnitus frequencies.</blockquote>
+      </article>
+      <article class="app" data-tags="name description treatment nodisc medical">
+        <h3><a href="https://apps.apple.com/us/app/id1323769129">Tinnitus Angel Sound Therapies</a></h3>
+        <p class="meta">JX Labs Limited · Medical</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="name" aria-pressed="false">Therapy, treatment or cure in the name</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button> <button type="button" class="chip sm" data-tag="medical" aria-pressed="false">Medical category</button></p>
+        <p class="qtitle">The description says the app provides tinnitus therapy designed to improve tonal tinnitus.</p>
+        <blockquote>Tinnitus Angel Sound Therapies: this app is designed to improve the condition of tonal tinnitus, and provides two kinds of tinnitus therapy: Neuromodulation Therapy and Notched Sound Therapy.</blockquote>
+      </article>
+      <article class="app" data-tags="subtitle description nodisc">
+        <h3><a href="https://apps.apple.com/us/app/id6758949594">Tinnitus Companion</a></h3>
+        <p class="meta">Raymond Clark · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Daily Relief &amp; Sound Therapy”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button></p>
+        <p class="qtitle">The description uses the word “therapy” to describe the app.</p>
+        <blockquote>Tinnitus Companion is a complete daily support system designed to help you manage tinnitus through sound therapy, nervous system calming, physical exercises, and structured tracking.</blockquote>
+      </article>
+      <article class="app" data-tags="name subtitle description treatment research nodisc">
+        <h3><a href="https://apps.apple.com/us/app/id6777599685">Tinnitus Cure</a></h3>
+        <p class="meta">Shenzhen Fu Kang Heng Development Co., Ltd. · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Notched therapy sound match”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="name" aria-pressed="false">Therapy, treatment or cure in the name</button> <button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button></p>
+        <p class="qtitle">The description calls the app’s method a clinically studied therapy designed to reduce tinnitus loudness.</p>
+        <blockquote>Our application uses Customized Notched Sound Therapy, a clinically studied technique designed to retrain your auditory cortex and reduce the perceived loudness of internal ringing.</blockquote>
+      </article>
+      <article class="app" data-tags="description nodisc">
+        <h3><a href="https://apps.apple.com/us/app/id6695743269">Tinnitus Ease</a></h3>
+        <p class="meta">ROLAND PETER SJOBERG · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Relieve tinnitus”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button></p>
+        <p class="qtitle">The description describes using the app as sound therapy.</p>
+        <blockquote>ASMR Sounds: Explore calming ASMR soundscapes, designed to promote relaxation and reduce stress, adding an extra dimension to your sound therapy.</blockquote>
+      </article>
+      <article class="app" data-tags="description treatment">
+        <h3><a href="https://apps.apple.com/us/app/id6742895822">Tinnitus Frequency App</a></h3>
+        <p class="meta">Brandon Stecklein · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Tinnitus symptom relief”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button></p>
+        <p class="qtitle">The description calls the app sound therapy and says it alleviates tinnitus symptoms.</p>
+        <blockquote>The Tinnitus Frequency App is your go-to app for managing and alleviating tinnitus symptoms through custom sound therapy.</blockquote>
+      </article>
+      <article class="app" data-tags="description treatment nodisc">
+        <h3><a href="https://apps.apple.com/us/app/id382593362">tinnitus help</a></h3>
+        <p class="meta">IND-Ingenieurbuero f. Nachrichten- u. Datentechnik · Health &amp; Fitness</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button></p>
+        <p class="qtitle">The description says the app has been used successfully to treat tinnitus.</p>
+        <blockquote>Developed by an expert software engineer in the field of frequency analysis and a leading music psychologist, music therapist and hearing therapist with more than 20 years’ experience in the treatment of tinnitus sufferers. Used very successfully in the treatment of tinnitus.</blockquote>
+      </article>
+      <article class="app" data-tags="treatment research medical">
+        <h3><a href="https://apps.apple.com/us/app/id891628361">Tinnitus HQ</a></h3>
+        <p class="meta">Phase4 Mobile, Inc. · Medical</p>
+        <p class="sub">Subtitle: “Natural sound masks &amp; filters”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button> <button type="button" class="chip sm" data-tag="medical" aria-pressed="false">Medical category</button></p>
+        <p class="qtitle">The description says research shows tinnitus can be treated the way the app works.</p>
+        <blockquote>Recent research shows that tinnitus can be treated by listening to sounds that have been filtered to remove your specific tinnitus frequencies.</blockquote>
+      </article>
+      <article class="app" data-tags="name description treatment research">
+        <h3><a href="https://apps.apple.com/us/app/id6790138122">Tinnitus Masker: Sound Therapy</a></h3>
+        <p class="meta">App Harbour ApS · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Ear ringing relief &amp; calm”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="name" aria-pressed="false">Therapy, treatment or cure in the name</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button></p>
+        <p class="qtitle">The description sells notched sound therapy as a premium feature.</p>
+        <blockquote>Premium unlocks notched sound therapy, the full 15-sound mixer, the complete course and relief-log trends, as a one-time lifetime purchase or a subscription.</blockquote>
+      </article>
+      <article class="app" data-tags="subtitle description">
+        <h3><a href="https://apps.apple.com/us/app/id6779979158">Tinnitus Relief - Husheva</a></h3>
+        <p class="meta">VAST FLOW, TOO · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Sound therapy &amp; hearing test”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button></p>
+        <p class="qtitle">The description calls the app a sound-therapy companion.</p>
+        <blockquote>Husheva is a tinnitus relief and sound-therapy companion.</blockquote>
+      </article>
+      <article class="app" data-tags="subtitle description">
+        <h3><a href="https://apps.apple.com/us/app/id1557727236">Tinnitus Relief Sound</a></h3>
+        <p class="meta">Josue Montano · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Tinnitus relief sound Therapy”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button></p>
+        <p class="qtitle">The description uses the word “therapy” to describe the app.</p>
+        <blockquote>Tinnitus Relief Sound helps you create a calmer daily routine with relaxing sound therapy, sound masking tools, personal journaling, and simple tracking features.</blockquote>
+      </article>
+      <article class="app" data-tags="subtitle description treatment medical">
+        <h3><a href="https://apps.apple.com/us/app/id1533437539">™Tinnitus Relief Sound Masking</a></h3>
+        <p class="meta">Burotec Limited · Medical</p>
+        <p class="sub">Subtitle: “Tinnitus Relief Sound Therapy”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="medical" aria-pressed="false">Medical category</button></p>
+        <p class="qtitle">The description calls the app noise therapy and a tool for personalized sound treatment.</p>
+        <blockquote>Tinnitus Relief Sound Masking is a simple, customizable app designed to help you mask and manage tinnitus using calming sounds and gentle noise therapy. If you&#x27;re trying to relax, drift-off to sleep, or ease the ringing in your ears, this app gives you powerful tools to create your own personalized sound treatment.</blockquote>
+      </article>
+      <article class="app" data-tags="description nodisc">
+        <h3><a href="https://apps.apple.com/us/app/id6742380332">Tinnitus Relief Sound Masking+</a></h3>
+        <p class="meta">Bart Jacobs · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Brown, Green and White Noise”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button></p>
+        <p class="qtitle">The description calls the app sound masking therapy for managing tinnitus symptoms.</p>
+        <blockquote>Serenity provides effective tinnitus relief sound masking therapy to help manage tinnitus symptoms and bring peace to your daily life.</blockquote>
+      </article>
+      <article class="app" data-tags="description treatment research">
+        <h3><a href="https://apps.apple.com/us/app/id6736926292">Tinnitus Relief Sounds</a></h3>
+        <p class="meta">Deisy Renteria · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Tinnitus Masking Relief Sounds”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button></p>
+        <p class="qtitle">The description says the app supports sound therapy for tinnitus symptoms.</p>
+        <blockquote>With sounds like ocean waves, forest whispers, and gentle rain, this app supports sound therapy for managing tinnitus symptoms.</blockquote>
+      </article>
+      <article class="app" data-tags="treatment research nodisc medical">
+        <h3><a href="https://apps.apple.com/us/app/id6742564706">Tinnitus Relief, Aid &amp; Help</a></h3>
+        <p class="meta">Pierre Stanislas · Medical</p>
+        <p class="sub">Subtitle: “Masking Habituation Management”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button> <button type="button" class="chip sm" data-tag="medical" aria-pressed="false">Medical category</button></p>
+        <p class="qtitle">The description says research shows tinnitus can be treated the way the app works.</p>
+        <blockquote>Recent research shows that tinnitus can be treated by listening to sounds that have been filtered to remove your specific tinnitus frequencies.</blockquote>
+      </article>
+      <article class="app" data-tags="subtitle description treatment">
+        <h3><a href="https://apps.apple.com/us/app/id6787265932">Tinnitus Relief: Auresa</a></h3>
+        <p class="meta">ALLEGRO DIGITAL LTD · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Sound Therapy &amp; Sleep Masker”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button></p>
+        <p class="qtitle">The description calls the app a sound therapy app.</p>
+        <blockquote>Auresa is a beautifully simple tinnitus relief and sound therapy app that helps you mask, calm and gradually habituate to tinnitus — one soothing session at a time.</blockquote>
+      </article>
+      <article class="app" data-tags="description treatment">
+        <h3><a href="https://apps.apple.com/us/app/id6795010925">Tinnitus Relief: EarCalm</a></h3>
+        <p class="meta">Speed AI Labs LLP · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Private, offline sound &amp; CBT”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button></p>
+        <p class="qtitle">The description calls the app’s sound mixer sound therapy.</p>
+        <blockquote>A layered sound-therapy mixer that keeps playing steadily through the night, with a gentle sleep timer.</blockquote>
+      </article>
+      <article class="app" data-tags="subtitle description treatment research">
+        <h3><a href="https://apps.apple.com/us/app/id6757972866">Tinnitus Relief: MyPattern</a></h3>
+        <p class="meta">ST14 X AS · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Sound Therapy for Ringing Ears”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button></p>
+        <p class="qtitle">The description calls the app a program of sound therapies.</p>
+        <blockquote>It&#x27;s a complete program of sound therapies and mental tools shaped around you and your tinnitus, paired with the story of why your brain won&#x27;t let the sound go, and how to loosen its grip.</blockquote>
+      </article>
+      <article class="app" data-tags="description nodisc">
+        <h3><a href="https://apps.apple.com/us/app/id6770140437">Tinnitus Relief: Ringing Ears</a></h3>
+        <p class="meta">Matthew Pratt · Health &amp; Fitness</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button></p>
+        <p class="qtitle">The description offers a choice of therapies in the app.</p>
+        <blockquote>Adjust the notch, choose a therapy, add gentle tools, or stop everything instantly.</blockquote>
+      </article>
+      <article class="app" data-tags="description treatment">
+        <h3><a href="https://apps.apple.com/us/app/id6763144466">Tinnitus Relief: Sleep &amp; Calm</a></h3>
+        <p class="meta">Nicola Erbacci · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Mask tinnitus, sleep better”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button></p>
+        <p class="qtitle">The description calls the app a sound therapy app.</p>
+        <blockquote>Tinnitus Relief is a sound therapy app built around one job: help you stop noticing the ringing in your ears.</blockquote>
+      </article>
+      <article class="app" data-tags="name">
+        <h3><a href="https://apps.apple.com/us/app/id6769763817">Tinnitus Relief: Sound Therapy</a></h3>
+        <p class="meta">Efat Md. Minhaz Siddiquee · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Ear Ringing &amp; Sleep Sounds”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="name" aria-pressed="false">Therapy, treatment or cure in the name</button></p>
+        <p class="qtitle">The app’s name on the App Store includes “Sound Therapy.”</p>
+        <blockquote>Tinnitus Relief: Sound Therapy</blockquote>
+      </article>
+      <article class="app" data-tags="subtitle description treatment research nodisc">
+        <h3><a href="https://apps.apple.com/us/app/id6756894241">Tinnitus Relief: StillWell</a></h3>
+        <p class="meta">Bit Byte Bit Software Ltd · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Sound Masking &amp; Therapy”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button></p>
+        <p class="qtitle">The description uses the word “therapy” to describe the app.</p>
+        <blockquote>StillWell combines personalized sound therapy along with a 12-week program to help you unwind and finally find moments of peace.</blockquote>
+      </article>
+      <article class="app" data-tags="description treatment medical">
+        <h3><a href="https://apps.apple.com/us/app/id6748435838">Tinnitus Relief: TinniSound</a></h3>
+        <p class="meta">EaseHere Limited · Medical</p>
+        <p class="sub">Subtitle: “Sound Masking &amp; Sleep Better”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="medical" aria-pressed="false">Medical category</button></p>
+        <p class="qtitle">The description says the app creates a personalized sound treatment, including for tinnitus relief.</p>
+        <blockquote>Whether you&#x27;re seeking relaxation, improved sleep, or relief from tinnitus, this app offers powerful tools to create a personalized sound treatment tailored to your needs.</blockquote>
+      </article>
+      <article class="app" data-tags="name description treatment research nodisc">
+        <h3><a href="https://apps.apple.com/us/app/id1525765625">Tinnitus Relief: Tonal Therapy</a></h3>
+        <p class="meta">Fickle Bits, LLC · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Reduce ringing with ACRN”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="name" aria-pressed="false">Therapy, treatment or cure in the name</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button></p>
+        <p class="qtitle">The description says the app’s therapy helps reduce tinnitus symptoms.</p>
+        <blockquote>Tonal Therapy helps reduce the symptoms of tinnitus through Acoustic Coordinated Reset Neuromodulation Therapy.</blockquote>
+      </article>
+      <article class="app" data-tags="subtitle description treatment research">
+        <h3><a href="https://apps.apple.com/us/app/id6765492234">Tinnitus Retraining</a></h3>
+        <p class="meta">Ian SMITH · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Finally Therapy for Tinnitus”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button></p>
+        <p class="qtitle">The description calls the app a comprehensive sound therapy app.</p>
+        <blockquote>Tinnitus Retraining is a comprehensive sound therapy app designed to help you manage tinnitus symptoms and improve your quality of life.</blockquote>
+      </article>
+      <article class="app" data-tags="subtitle description treatment research">
+        <h3><a href="https://apps.apple.com/us/app/id6762468342">Tinnitus Saurus</a></h3>
+        <p class="meta">Techiasaurus, LLC · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Ringing Ears Sound Therapy”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button></p>
+        <p class="qtitle">The description says research suggests the app’s notched sound therapy may help reduce tinnitus loudness.</p>
+        <blockquote>Notched sound therapy removes a narrow band of frequencies centered on your tinnitus pitch from broadband noise or music. Research suggests this approach may help reduce perceived tinnitus loudness over time through a mechanism called lateral inhibition.</blockquote>
+      </article>
+      <article class="app" data-tags="name description">
+        <h3><a href="https://apps.apple.com/us/app/id6469771069">Tinnitus sound therapy</a></h3>
+        <p class="meta">Pavel Vinnik · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Sounds masking, Relief &amp; Help”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="name" aria-pressed="false">Therapy, treatment or cure in the name</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button></p>
+        <p class="qtitle">The description calls the app a tinnitus therapy app.</p>
+        <blockquote>Tinnitus+ app is a tinnitus therapy app to mask the ringing in your ears with calming sounds.</blockquote>
+      </article>
+      <article class="app" data-tags="name description treatment nodisc medical">
+        <h3><a href="https://apps.apple.com/us/app/id6670191583">Tinnitus Sound Therapy RngAway</a></h3>
+        <p class="meta">Hussain Mustafa · Medical</p>
+        <p class="sub">Subtitle: “Tinitus Ring Relief Calm Sound”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="name" aria-pressed="false">Therapy, treatment or cure in the name</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button> <button type="button" class="chip sm" data-tag="medical" aria-pressed="false">Medical category</button></p>
+        <p class="qtitle">The description calls the app the ultimate sound therapy app.</p>
+        <blockquote>Look no further than RingAway, the ultimate sound therapy app designed to help you manage your symptoms, calm your mind, and regain control of your life.</blockquote>
+      </article>
+      <article class="app" data-tags="name description treatment">
+        <h3><a href="https://apps.apple.com/us/app/id6463489658">Tinnitus Sound Threapy</a></h3>
+        <p class="meta">Jiten Parmar · Lifestyle</p>
+        <p class="sub">Subtitle: “Ringing Ears Relief &amp; Sleep”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="name" aria-pressed="false">Therapy, treatment or cure in the name</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button></p>
+        <p class="qtitle">The description presents the app’s sounds as tinnitus therapy and treatment.</p>
+        <blockquote>One of the most powerful tinnitus therapy methods is to use the sounds of nature. Many tinnitus sufferers, sleep better when they hear sounds of the ocean waves, waterfall, running river, or rain. Those people are now recognizing the benefits of nature sounds as part of their daily tinnitus treatment.</blockquote>
+        <p class="note">“Threapy” is spelled this way in the app’s name.</p>
+      </article>
+      <article class="app" data-tags="name description treatment research">
+        <h3><a href="https://apps.apple.com/us/app/id6782224159">Tinnitus Tamer: Sound Therapy</a></h3>
+        <p class="meta">Justin Pruskowski · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Track, Soothe &amp; Habituate”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="name" aria-pressed="false">Therapy, treatment or cure in the name</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button></p>
+        <p class="qtitle">A section heading in the description claims the app’s sound therapy works.</p>
+        <blockquote>SOUND THERAPY THAT ACTUALLY WORKS</blockquote>
+      </article>
+      <article class="app" data-tags="name subtitle description">
+        <h3><a href="https://apps.apple.com/us/app/id6499084492">Tinnitus Therapy - ACRN</a></h3>
+        <p class="meta">safak helvaci · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Tinnitus Treatment Protocol”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="name" aria-pressed="false">Therapy, treatment or cure in the name</button> <button type="button" class="chip sm" data-tag="subtitle" aria-pressed="false">Therapy or treatment in the subtitle</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button></p>
+        <p class="qtitle">The description says the app provides acoustic sound therapy.</p>
+        <blockquote>The app provides acoustic sound therapy to help mask tinnitus tones, promote relaxation, and improve overall comfort.</blockquote>
+      </article>
+      <article class="app" data-tags="name description treatment nodisc">
+        <h3><a href="https://apps.apple.com/us/app/id794541814">Tinnitus Therapy Lite</a></h3>
+        <p class="meta">Headwaters Inc. · Health &amp; Fitness</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="name" aria-pressed="false">Therapy, treatment or cure in the name</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button></p>
+        <p class="qtitle">The description presents the app as tinnitus therapy meant to relieve tinnitus symptoms.</p>
+        <blockquote>We take tinnitus therapy seriously and it is our hope that this application will provide relief for your tinnitus symptoms.</blockquote>
+        <p class="note">Published by Headwaters Inc. (Sound Oasis), which publishes six apps on this list.</p>
+      </article>
+      <article class="app" data-tags="name description treatment nodisc">
+        <h3><a href="https://apps.apple.com/us/app/id771010115">Tinnitus Therapy Pro</a></h3>
+        <p class="meta">Headwaters Inc. · Health &amp; Fitness</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="name" aria-pressed="false">Therapy, treatment or cure in the name</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button></p>
+        <p class="qtitle">The description lists “doctor developed tinnitus therapy sounds.”</p>
+        <blockquote>6 doctor developed tinnitus therapy sounds: Tinnitus Therapy .9K - 3.2K, Tinnitus Therapy 1 1K - 10K, Tinnitus Therapy 2 1K - 10K, Tinnitus Therapy 2.5K - 5K, Tinnitus Therapy 2K - 8K, Tinnitus Therapy 3 1K - 10K</blockquote>
+        <p class="note">Published by Headwaters Inc. (Sound Oasis), which publishes six apps on this list.</p>
+      </article>
+      <article class="app" data-tags="description research">
+        <h3><a href="https://apps.apple.com/us/app/id6771102700">Tinnitus Tracker: Tone Match</a></h3>
+        <p class="meta">Mohamed Ali · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Frequency generator &amp; relief”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button></p>
+        <p class="qtitle">The description lists a therapy as a premium feature of the app.</p>
+        <blockquote>Notched-noise therapy tuned to your matched tone</blockquote>
+      </article>
+      <article class="app" data-tags="description treatment research nodisc">
+        <h3><a href="https://apps.apple.com/us/app/id6758023099">TinnitusStory</a></h3>
+        <p class="meta">Jacob Duvall · Health &amp; Fitness</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button></p>
+        <p class="qtitle">The description calls the app evidence-based sound therapy.</p>
+        <blockquote>TinnitusStory helps you manage tinnitus through evidence-based sound therapy, guided meditations, and a structured habituation program.</blockquote>
+      </article>
+      <article class="app" data-tags="name description treatment nodisc">
+        <h3><a href="https://apps.apple.com/us/app/id6762290728">Tinova: Sleep &amp; Sound Therapy</a></h3>
+        <p class="meta">Side By Tech LLC · Health &amp; Fitness</p>
+        <p class="sub">Subtitle: “Tinnitus focus white noise”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="name" aria-pressed="false">Therapy, treatment or cure in the name</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button></p>
+        <p class="qtitle">The description calls the app sound therapy that helps ease tinnitus.</p>
+        <blockquote>Tinova is a precision sound therapy app built to help you fall asleep faster, focus deeper, and ease tinnitus through carefully designed audio — now with full Sleep Intelligence powered by Apple Watch.</blockquote>
+      </article>
+      <article class="app" data-tags="name description treatment research medical">
+        <h3><a href="https://apps.apple.com/us/app/id6471373051">Tonal Tinnitus Therapy</a></h3>
+        <p class="meta">appyhapps.nl B.V. · Medical</p>
+        <p class="sub">Subtitle: “Tinnitus Relief”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="name" aria-pressed="false">Therapy, treatment or cure in the name</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="research" aria-pressed="false">Cites research or clinical evidence</button> <button type="button" class="chip sm" data-tag="medical" aria-pressed="false">Medical category</button></p>
+        <p class="qtitle">The description says research indicates the app’s method can alleviate tinnitus symptoms in some cases.</p>
+        <blockquote>The Tonal Tinnitus Therapy app employs acoustic neuromodulation. Research indicates that, in certain instances, acoustic neuromodulation can alleviate tinnitus symptoms.</blockquote>
+      </article>
+      <article class="app" data-tags="name description treatment nodisc medical">
+        <h3><a href="https://apps.apple.com/us/app/id6569241721">TSound: tinnitus sound therapy</a></h3>
+        <p class="meta">Andrii Fomichov · Medical</p>
+        <p class="sub">Subtitle: “Tinnitus relief sound masking”</p>
+        <p class="tags"><button type="button" class="chip sm" data-tag="name" aria-pressed="false">Therapy, treatment or cure in the name</button> <button type="button" class="chip sm" data-tag="description" aria-pressed="false">Calls itself therapy or treatment</button> <button type="button" class="chip sm" data-tag="treatment" aria-pressed="false">Claims to reduce tinnitus or its impact</button> <button type="button" class="chip sm" data-tag="nodisc" aria-pressed="false">No medical disclaimer in listing</button> <button type="button" class="chip sm" data-tag="medical" aria-pressed="false">Medical category</button></p>
+        <p class="qtitle">The description says the app is useful for the treatment of tinnitus.</p>
+        <blockquote>VERSATILITY - the application is useful not only for the treatment of tinnitus, but also for sleep, meditation, work, travel and other needs to calm down.</blockquote>
+      </article>
   </section>
 </main>
 <footer class="wrap"><a href="./">Home</a><a href="support.html">Support</a><a href="privacy.html">Privacy</a></footer>
+<script>
+(function () {
+  var active = new Set();
+  var apps = Array.prototype.slice.call(document.querySelectorAll('.app'));
+  var chips = Array.prototype.slice.call(document.querySelectorAll('.chip'));
+  var shown = document.getElementById('shown');
+  var clear = document.getElementById('clear');
+  var total = apps.length;
+  function render() {
+    var n = 0;
+    apps.forEach(function (a) {
+      var tags = a.getAttribute('data-tags').split(' ');
+      var match = active.size === 0 || tags.some(function (t) { return active.has(t); });
+      a.hidden = !match;
+      if (match) n++;
+    });
+    chips.forEach(function (c) { c.setAttribute('aria-pressed', active.has(c.dataset.tag) ? 'true' : 'false'); });
+    shown.textContent = active.size === 0 ? 'Showing all ' + total + ' apps' : 'Showing ' + n + ' of ' + total + ' apps';
+    clear.hidden = active.size === 0;
+  }
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () {
+      var t = c.dataset.tag;
+      if (active.has(t)) active.delete(t); else active.add(t);
+      render();
+    });
+  });
+  clear.addEventListener('click', function () { active.clear(); render(); });
+  render();
+})();
+</script>
 </body></html>
